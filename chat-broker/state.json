@@ -1,27 +1,8 @@
 {
-  "session": "proof-trial-20261125-02",
-  "run_url": "https://github.com/hyungjun7218-crypto/pequalnp-proofs/actions/runs/45553910694",
+  "session": "proof-live-20261125-03",
+  "run_url": "https://github.com/hyungjun7218-crypto/pequalnp-proofs/actions/runs/45554688745",
   "mode": "normal",
-  "status": "released",
-  "gap": {
-    "id": "L-meta-3576",
-    "statement": "∀ (n k : ℕ) (G : SimpleGraph (Fin n)) [DecidableRel G.Adj] (side : Fin n → Bool) (I : Fin k → Finset (Fin n)), (∀ a b : Fin n, G.Adj a b → side a ≠ side b) → (∀ a b c d : Fin n, a ≠ c → b ≠ d → ¬ (G.Adj a b ∧ G.Adj b c ∧ G.Adj c d ∧ G.Adj d a)) → 2 ≤ k → (∀ j : Fin k, ∀ a ∈ I j, ∀ b ∈ I j, ¬ G.Adj a b) → (∀ v : Fin n, ∃ j : Fin k, v ∈ I j) → (∀ v : Fin n, ∃ j : Fin k, v ∉ I j) → (∀ j : Fin k, (I j).card + 2 ≤ n) → (∀ a b : Fin n, a ≠ b → ¬ G.Adj a b → ∃ j : Fin k, a ∈ I j ∧ b ∈ I j) → ∃ T : Finset (Fin n), (∀ a b : Fin n, G.Adj a b → a ∈ T ∨ b ∈ T) ∧ G.edgeFinset.card + T.card + 1 ≤ ∑ j : Fin k, (n - (I j).card)",
-    "file": "lean/PEqualNP/Outside/L_meta_3576.lean",
-    "module": "PEqualNP.Outside.L_meta_3576",
-    "imports": [
-      "PEqualNP.Defs"
-    ],
-    "context": "SKETCH: No proof is in hand; this is a pure counting question. Let c(v) be the number of the sets that leave v out: the right side is the sum of c(v), every c(v) is at least 1, and on every edge c(u) + c(v) is at least k since no set holds both ends. For a non-adjacent pair the sets leaving out u and those leaving out v do not exhaust all k. Try induction deleting one vertex with its edges, and find where the absence of a 4-cycle is needed. Size: open, hours; a counterexample goes to the negation on this desk. No sorry, no new axiom. Own namespace for every declaration.",
-    "dead": [],
-    "sketch": "No proof is in hand; this is a pure counting question. Let c(v) be the number of the sets that leave v out: the right side is the sum of c(v), every c(v) is at least 1, and on every edge c(u) + c(v) is at least k since no set holds both ends. For a non-adjacent pair the sets leaving out u and those leaving out v do not exhaust all k. Try induction deleting one vertex with its edges, and find where the absence of a 4-cycle is needed. Size: open, hours; a counterexample goes to the negation on this desk. No sorry, no new axiom. Own namespace for every declaration.",
-    "title": "Block inequality: independent sets covering all non-adjacent pairs of a 4-cycle-free bipartite graph, none common to all: total co-size >= edges + cover + 1",
-    "unlocks": "a counting inequality that the vertex-peel line of the plane attack is blocked on"
-  },
-  "expires_at": "2026-11-25T05:50:33.835Z",
-  "shard": null,
-  "shards": null,
-  "last_seq": 2,
-  "updated_at": 1795584696,
-  "reason": "out_of_time",
-  "http": 200
+  "status": "no_gap",
+  "note": "no step is free that you have not already looked at and handed back in the last hour (1); new steps are posted through the day, ask again in a few minutes",
+  "updated_at": 1795584965
 }

@@ -17,9 +17,9 @@
     "title": "Block inequality: independent sets covering all non-adjacent pairs of a 4-cycle-free bipartite graph, none common to all: total co-size >= edges + cover + 1",
     "unlocks": "a counting inequality that the vertex-peel line of the plane attack is blocked on"
   },
-  "expires_at": "2026-11-25T05:49:30.819Z",
+  "expires_at": "2026-11-25T05:50:33.835Z",
   "shard": null,
   "shards": null,
-  "last_seq": 0,
-  "updated_at": 1795584570
+  "last_seq": 1,
+  "updated_at": 1795584633
 }

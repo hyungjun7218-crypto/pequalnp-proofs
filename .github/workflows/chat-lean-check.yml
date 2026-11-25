@@ -42,6 +42,14 @@ jobs:
           p=pathlib.Path(sys.argv[1])
           d=json.loads((p/"candidate.json").read_text())
           g,f,k,b=d["gap"],d["file"],d.get("kind","check"),d["base"]
+          test=d.get("mode")=="selftest"
+          if test:
+              fixed="lean/PEqualNP/Outside/L_chat_selftest_1.lean"
+              if (g,f,k)!=("L-chat-selftest-1",fixed,"check"): sys.exit("REFUSED: invalid selftest identifiers")
+              expected="import Mathlib.Data.Nat.Basic\n\ntheorem PEqualNP.Outside.L_chat_selftest_1 : ∀ n : ℕ, n + 0 = n := by\n  intro n\n  exact Nat.add_zero n\n"
+              if d["proof"]!=expected: sys.exit("REFUSED: invalid selftest proof")
+              (p/"test-gaps.json").write_text(json.dumps({"gaps":[{"id":g,"file":f,"module":"PEqualNP.Outside.L_chat_selftest_1","statement":"∀ n : ℕ, n + 0 = n","imports":[]}]}))
+          elif g=="L-chat-selftest-1": sys.exit("REFUSED: reserved selftest identifier")
           if not re.fullmatch(r"L-[a-z0-9]+(?:-[a-z0-9]+)*",g): sys.exit("REFUSED: bad gap")
           if not re.fullmatch(r"lean/PEqualNP/Outside/(L_[a-z0-9_]+|R_[a-z0-9_]+_[1-9][0-9]{0,2})\.lean",f): sys.exit("REFUSED: bad file")
           if k not in ("check","refute","reduce") or not re.fullmatch(r"[0-9a-f]{40}",b): sys.exit("REFUSED: bad kind or base")
@@ -52,6 +60,7 @@ jobs:
           (p/"base.sha").write_text(b+"\n")
           with open(__import__("os").environ["GITHUB_ENV"],"a") as out:
               out.write("GAP="+g+"\nKIND="+k+"\n")
+              out.write("SELFTEST="+("yes" if test else "no")+"\n")
           PY
           git -C "$W/base" init -q
           git -C "$W/base" fetch -q --depth 256 https://github.com/open-goat/pequalnp-proofs.git main
@@ -64,7 +73,12 @@ jobs:
           set -eu
           exec > >(tee -a "$RUNNER_TEMP/steps.log") 2>&1   # kept for the verdict step
           # The statement comes from the desk's public list, never from the pull request.
-          curl -sSf --proto '=https' --max-redirs 0 --max-filesize 20000000 -o "$W/in/gaps.json" "$GAPS_URL"
+          if [ "${SELFTEST:-no}" = yes ]; then
+            echo "SELFTEST ONLY: synthetic fixture, no official desk claim or PR"
+            cp "$W/in/test-gaps.json" "$W/in/gaps.json"
+          else
+            curl -sSf --proto '=https' --max-redirs 0 --max-filesize 20000000 -o "$W/in/gaps.json" "$GAPS_URL"
+          fi
           # The run's kind goes to the guard, which refuses it unless the desk's row agrees: check or
           # refute as the desk posts the step; reduce only for an R_<gap>_<n> file of a step posted to be
           # proved whose row carries reductions: true (DARK: absent, every reduction run is refused).

@@ -1,8 +1,8 @@
 {
-  "session": "proof-live-20261125-04",
-  "run_url": "https://github.com/hyungjun7218-crypto/pequalnp-proofs/actions/runs/45554753333",
-  "mode": "hard",
+  "session": "proof-live-20261125-05",
+  "run_url": "https://github.com/hyungjun7218-crypto/pequalnp-proofs/actions/runs/45555639919",
+  "mode": "normal",
   "status": "no_gap",
   "note": "no step is free that you have not already looked at and handed back in the last hour (1); new steps are posted through the day, ask again in a few minutes",
-  "updated_at": 1795584997
+  "updated_at": 1795585476
 }

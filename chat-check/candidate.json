@@ -1,0 +1,1 @@
+{"mode":"selftest","gap":"L-chat-selftest-1","file":"lean/PEqualNP/Outside/L_chat_selftest_1.lean","kind":"check","base":"b28b97fa42653b44f71514457a57ae25b3f0d823","proof":"import Mathlib.Data.Nat.Basic\n\ntheorem PEqualNP.Outside.L_chat_selftest_1 : ∀ n : ℕ, n + 0 = n := by\n  intro n\n  exact Nat.add_zero n\n"}

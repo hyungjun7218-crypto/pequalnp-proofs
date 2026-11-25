@@ -1,11 +1,11 @@
 {
-  "session": "proof-live-diagnostic-20261125-01",
-  "run_url": "https://github.com/hyungjun7218-crypto/pequalnp-proofs/actions/runs/45559637983",
+  "session": "proof-live-20261125-08",
+  "run_url": "https://github.com/hyungjun7218-crypto/pequalnp-proofs/actions/runs/45562129321",
   "mode": "normal",
   "status": "no_gap",
   "http": 200,
   "json_object": true,
   "gap_present": true,
-  "note": "no step is free that you have not already looked at and handed back in the last hour (1); new steps are posted through the day, ask again in a few minutes",
-  "updated_at": 1795587530
+  "note": "No step is free right now. Please do not pick one from the public file: it may already be held, and only the first valid proof of a step is recorded. Ask again in a few minutes.",
+  "updated_at": 1795588733
 }

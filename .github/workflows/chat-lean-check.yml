@@ -54,9 +54,10 @@ jobs:
               out.write("GAP="+g+"\nKIND="+k+"\n")
           PY
           git -C "$W/base" init -q
-          git -C "$W/base" fetch -q --depth 1 https://github.com/open-goat/pequalnp-proofs.git main
-          [ "$(git -C "$W/base" rev-parse FETCH_HEAD)" = "$(cat "$W/in/base.sha")" ] || { echo "FAULT: upstream changed; refresh candidate base"; exit 1; }
-          git -C "$W/base" checkout -q --detach FETCH_HEAD
+          git -C "$W/base" fetch -q --depth 256 https://github.com/open-goat/pequalnp-proofs.git main
+          base="$(cat "$W/in/base.sha")"
+          git -C "$W/base" merge-base --is-ancestor "$base" FETCH_HEAD || { echo "FAULT: base is not in recent upstream history; refresh candidate base"; exit 1; }
+          git -C "$W/base" checkout -q --detach "$base"
           [ ! -e "$W/base/$(cat "$W/in/pr.file")" ] || { echo "REFUSED: file already exists upstream"; exit 1; }
       - name: The posted statement for the gap, and the import rule
         run: |

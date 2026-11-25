@@ -20,10 +20,10 @@
   "expires_at": "2026-11-25T07:53:06.779Z",
   "shard": null,
   "shards": null,
-  "last_seq": 2,
+  "last_seq": 3,
   "http": 200,
   "json_object": true,
   "gap_present": true,
-  "updated_at": 1795591986,
+  "updated_at": 1795592414,
   "desk_state": "leased"
 }

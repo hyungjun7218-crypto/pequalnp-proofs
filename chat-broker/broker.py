@@ -28,11 +28,15 @@ def put(path,data):
     gh(f"repos/{REPO}/contents/{path}",body)
 def desk(action, params, method="GET"):
     url=DESK+action+"?"+urllib.parse.urlencode(params)
-    req=urllib.request.Request(url,method=method, data=b"" if method=="POST" else None)
     try:
-        with urllib.request.urlopen(req,timeout=25) as res: return res.status,json.loads(res.read())
-    except urllib.error.HTTPError as e:
-        return e.code,{}
+        # Follow the official curl client; no redirects, no secret-bearing output.
+        # Pass URL through stdin config, not command line (lease stays out of process listing).
+        p=subprocess.run(["curl","-sS","--max-time","25","--proto","=https","-X",method,"-w","\n%{http_code}","--config","-"],input="url = "+json.dumps(url)+"\n",text=True,capture_output=True,timeout=30)
+        if p.returncode: return 0,{}
+        raw,code=p.stdout.rsplit("\n",1)
+        try: data=json.loads(raw)
+        except ValueError: data={}
+        return int(code), data if isinstance(data,dict) else {}
     except Exception: return 0,{}
 def safe_gap(g):
     return {k:g[k] for k in ("id","statement","file","module","imports","context","dead","sketch","refutation","shard_spec","title","unlocks","kind","reductions") if k in g}

@@ -95,11 +95,24 @@ try:
             if op in ("renew","prepare_submit"):
                 if not beat(): break
                 if op=="prepare_submit":
+                    commit=control.get("commit","")
+                    verified=False
+                    if isinstance(commit,str) and re.fullmatch(r"[0-9a-f]{40}",commit):
+                        try:
+                            ci=gh(f"repos/{REPO}/commits/{commit}/status")
+                            item=gh(f"repos/{REPO}/contents/chat-check/candidate.json?ref={commit}")
+                            candidate=json.loads(base64.b64decode(item["content"]))
+                            verified=any(x.get("context")=="chat-lean-check" and x.get("state")=="success" for x in ci.get("statuses",[])) and candidate.get("mode")!="selftest" and candidate.get("gap")==gid and (candidate.get("file")==public["file"] or candidate.get("kind")=="reduce" and public.get("reductions") is True)
+                            if verified:
+                                proof=candidate["proof"].encode("utf-8")
+                                import hashlib
+                                blob=hashlib.sha1(b"blob "+str(len(proof)).encode()+b"\0"+proof).hexdigest()
+                        except Exception: verified=False
                     c,ans=desk("step",{"gap":gid})
                     s=ans.get("state")
-                    if c==200 and s in ("open","leased"):
-                        publish("ready_to_submit",last_seq=seq,desk_state=s,verified_commit=control.get("commit"))
-                    else: publish("submit_blocked",last_seq=seq,desk_state=s,http=c)
+                    if verified and c==200 and s in ("open","leased"):
+                        publish("ready_to_submit",last_seq=seq,desk_state=s,verified_commit=commit,verified_blob=blob,verified_file=candidate["file"])
+                    else: publish("submit_blocked",last_seq=seq,desk_state=s,http=c,preflight_verified=verified)
             elif op=="check_status":
                 c,ans=desk("step",{"gap":gid})
                 publish("held",last_seq=seq,desk_state=ans.get("state"),http=c)
@@ -112,7 +125,7 @@ try:
                     x=gh(f"repos/open-goat/pequalnp-proofs/pulls/{pr}")
                     files=gh(f"repos/open-goat/pequalnp-proofs/pulls/{pr}/files?per_page=100")
                     path=public["file"] if reason=="submitted" else control.get("file")
-                    if x["user"]["login"]!=HANDLE or len(files)!=1 or files[0]["filename"]!=path or files[0]["status"]!="added":
+                    if x["user"]["login"]!=HANDLE or x["base"]["repo"]["full_name"]!="open-goat/pequalnp-proofs" or x["base"]["ref"]!="main" or len(files)!=1 or files[0]["filename"]!=path or files[0]["status"]!="added" or path!=state.get("verified_file") or files[0].get("sha")!=state.get("verified_blob"):
                         publish("pr_not_verified",last_seq=seq); continue
                 params={"lease":lease,"reason":reason}
                 if reason=="exhausted":

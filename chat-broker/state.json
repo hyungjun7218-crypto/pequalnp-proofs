@@ -17,13 +17,13 @@
     "title": "4-cycle-free bipartite incidence: every least exact fan-in-two AND/OR circuit for it that is top-stuck is two-level",
     "unlocks": "With the checked normal form of the lift, this gives: on a bipartite graph with no 4-cycle some least circuit is two-level, which with a checked count is the one-output bound."
   },
-  "expires_at": "2026-11-25T07:45:11.931Z",
+  "expires_at": "2026-11-25T07:53:06.779Z",
   "shard": null,
   "shards": null,
-  "last_seq": 1,
+  "last_seq": 2,
   "http": 200,
   "json_object": true,
   "gap_present": true,
-  "updated_at": 1795591528,
+  "updated_at": 1795591986,
   "desk_state": "leased"
 }

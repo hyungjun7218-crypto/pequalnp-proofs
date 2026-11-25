@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  statuses: write
 concurrency:
   group: chat-lean-check
   cancel-in-progress: true
@@ -13,26 +14,40 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
+      - name: Publish run link
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" -f state=pending -f context=chat-lean-check -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" -f description="Chat Lean check started"
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - name: Request one assigned gap
+        if: ${{ hashFiles('chat-check/candidate.lean') == '' }}
+        run: |
+          set -eu
+          curl -fsS --max-time 30 --proto '=https' 'https://pequalnp.com/desk/next?handle=hyungjun7218-crypto' -o "$RUNNER_TEMP/desk.json"
+          python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print(json.dumps({"gap":d.get("gap"),"note":d.get("note"),"error":d.get("error"),"expires_at":(d.get("lease") or {}).get("expires_at")},ensure_ascii=False,indent=2))' "$RUNNER_TEMP/desk.json"
       - name: Install pinned Lean
+        if: ${{ hashFiles('chat-check/candidate.lean') != '' }}
         run: |
           set -eu
           sh .github/scripts/install-elan.sh v4.4.0 0e8250aa2be86c7af929ade68db617af9edc8b9ccf6eaf5ece228250d0d032e2 "$HOME/.elan" "$(cat lean/lean-toolchain)"
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
       - name: Fetch pinned Mathlib
+        if: ${{ hashFiles('chat-check/candidate.lean') != '' }}
         working-directory: lean
         run: lake exe cache get
-      - name: Smoke test or check candidate
-        shell: bash
+      - name: Compile candidate
+        if: ${{ hashFiles('chat-check/candidate.lean') != '' }}
         run: |
-          set -eu
           cd lean
-          lean --version
-          if [ -f ../chat-check/candidate.lean ]; then
-            lake env lean ../chat-check/candidate.lean
-          else
-            printf 'import Mathlib\nexample (n : Nat) : n + 0 = n := by simp\n' > "$RUNNER_TEMP/smoke.lean"
-            lake env lean "$RUNNER_TEMP/smoke.lean"
-          fi
+          lake env lean ../chat-check/candidate.lean
+      - name: Publish result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULT: ${{ job.status }}
+        run: |
+          case "$RESULT" in success) state=success;; *) state=failure;; esac
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" -f state="$state" -f context=chat-lean-check -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" -f description="Chat Lean check $RESULT"
